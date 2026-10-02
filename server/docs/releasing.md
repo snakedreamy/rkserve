@@ -8,18 +8,20 @@ The application and plugins are built and published separately from the same rep
 
 `server/Containerfile` builds Core and the console only. It does not download plugin models or the RKNN SDK.
 
-Push a `v*` tag (for example `v0.1.0`) to run the `Image` workflow, which publishes a `linux/arm64` image to GHCR. Manual dispatch of that workflow also pushes an image.
+Push a `v*` tag (for example `v0.1.0`) to run the `Image` workflow, which publishes a `linux/arm64` image to GHCR as `ghcr.io/snakedreamy/rkserve`. Semver tags also update `latest`.
+
+Manual dispatch of that workflow publishes an image tagged with the commit SHA; it does not update `latest`. After the first push, set the GHCR package visibility to public if the repository is public.
 
 ## Plugins
 
-The `Plugins` workflow:
+Push a `plugins-v*` tag (for example `plugins-v0.1.0`) to run the `Plugins` workflow:
 
-1. Converts models from pinned inputs on an x86_64 runner.
-2. Builds workers on an ARM64 runner, downloading third-party files listed in `plugins/deps.lock`.
-3. Packages each plugin as `rkserve-plugin-<id>.tar.gz`.
-4. On a `plugins-v*` tag, also creates a GitHub Release with those archives and `SHA256SUMS`.
+1. Convert models from pinned inputs on an x86_64 runner.
+2. Build workers on an ARM64 runner, downloading third-party files listed in `plugins/deps.lock`.
+3. Package each plugin as `rkserve-plugin-<id>.tar.gz`.
+4. Create a GitHub Release with those archives and `SHA256SUMS`.
 
-Manual workflow runs keep the packages as Actions artifacts. Users install a published release with `plugins/install.sh --release`.
+Users install a published release with `plugins/install.sh`. Manual dispatch of the workflow builds the same packages without creating a release.
 
 Do not overwrite an existing release tag.
 
@@ -32,4 +34,4 @@ shellcheck -x server/deploy/*.sh plugins/install.sh plugins/tools/*.sh plugins/*
 (cd server/frontend && pnpm test)
 ```
 
-Model conversion and image builds run on GitHub. After a plugin build, install the packages on an RK3576 and confirm workers load, inference runs, and the console and API still authenticate.
+Model conversion and image builds run on GitHub. After a plugin release, install the packages on an RK3576 and confirm workers load, inference runs, and the console and API still authenticate.

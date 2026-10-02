@@ -25,7 +25,7 @@ Project documentation has matching `.zh-CN.md` versions. Maintained code comment
 
 ## Plugins
 
-Core ships without plugins. Each plugin is a separate installable package; install only the ones you need. Models are converted for **RK3576**; other RK35xx chips need their own conversion. A GitHub Release has not been published yet.
+Core ships without plugins. Install only the ones you need from the GitHub Release. Models are converted for **RK3576**; other RK35xx chips need their own conversion.
 
 | Plugin | Capability | Model |
 | --- | --- | --- |
@@ -36,10 +36,10 @@ Core ships without plugins. Each plugin is a separate installable package; insta
 | `matcha-tts` | Chinese/English speech synthesis | Matcha-TTS + Vocos |
 
 ```bash
-plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
 ```
 
-Plugin packages are built by GitHub Actions from pinned upstream sources. Models and bundled third-party components keep their own licenses (including AGPL-3.0, GPL-3.0 and the Rockchip RKNN SDK license); see [plugins/README.md](plugins/README.md) before installing or redistributing them.
+The installer downloads `rkserve-plugin-*.tar.gz` from GitHub Releases and verifies SHA-256. Use `--from DIR` to install from local archives instead. Models and bundled third-party components keep their own licenses (including AGPL-3.0, GPL-3.0 and the Rockchip RKNN SDK license); see [plugins/README.md](plugins/README.md).
 
 ## Repository layout
 
@@ -61,15 +61,16 @@ plugins/                Plugin sources, model conversion and packaging
 
 Model weights, compiled workers and downloaded runtime libraries are not committed to Git; small data assets and console fonts remain tracked.
 
-## Quick start: prebuilt image
+## Quick start: image and plugins
 
-The `Image` workflow publishes a `linux/arm64` image with Core and the console when a version tag is pushed. **The command below works only after an image has been published:**
+The published `linux/arm64` image contains Core and the console. Plugins are installed on the host and mounted into the container.
 
 ```bash
 podman pull ghcr.io/snakedreamy/rkserve:latest
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26
 ```
 
-Install plugins into a host directory and mount it at `/opt/rkserve/plugins`. The image also needs NPU/RGA device mappings and an API key secret; see [Security and Caddy deployment](server/docs/security-and-deployment.md), or the [Rootless Quadlet deployment](server/deploy/quadlet/README.md) for a long-running service.
+Create an API key secret, map the NPU and RGA devices, and mount the plugin directory at `/opt/rkserve/plugins`. See [Security and Caddy deployment](server/docs/security-and-deployment.md), or [Rootless Quadlet deployment](server/deploy/quadlet/README.md) for a long-running service.
 
 ## Build from source
 
@@ -80,7 +81,7 @@ Build Core and the console on the device (from the repository root):
 (cd server/frontend && corepack enable pnpm && pnpm install --frozen-lockfile && pnpm run build)
 ```
 
-Plugins are normally installed from the release. To build a plugin yourself, see [plugins/README.md](plugins/README.md).
+Plugins are installed from the GitHub Release. To build a plugin yourself, see [plugins/README.md](plugins/README.md).
 
 ## Run
 

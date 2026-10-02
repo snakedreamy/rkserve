@@ -2,7 +2,11 @@
 
 English | [简体中文](README.zh-CN.md)
 
-This guide targets Podman 5.4.2+ with user-level Quadlet services. Build and runtime users have separate rootless storage, so images are handed off using Docker archives. The runtime user needs no Git, Rust, Node, GCC or source checkout.
+This guide targets Podman 5.4.2+ with user-level Quadlet services. The runtime user needs no Git, Rust, Node, GCC or source checkout.
+
+To use the published image, pull `ghcr.io/snakedreamy/rkserve:<version>`, set that name as `Image=` in the Quadlet unit, and remove `Pull=never`. Skip the export/import steps; the rest of this guide (runtime user, secret, plugin directory, Caddy) still applies.
+
+The export/import steps below hand a locally built image from a build user to a separate runtime user. Their rootless Podman storage is isolated, so the image is transferred as a Docker archive.
 
 ## 1. One-time runtime-user setup by an administrator
 

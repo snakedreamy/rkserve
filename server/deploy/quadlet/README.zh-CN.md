@@ -2,7 +2,11 @@
 
 [English](README.md) | 简体中文
 
-本方案适配 Podman 5.4.2 及以上版本，使用用户级 Quadlet 管理容器。编译用户与运行用户的 Rootless Podman storage 相互隔离，因此使用 Docker archive 交接镜像。运行用户不需要 Git、Rust、Node、GCC 或项目源码。
+本方案适配 Podman 5.4.2 及以上版本，使用用户级 Quadlet 管理容器。运行用户不需要 Git、Rust、Node、GCC 或项目源码。
+
+若使用已发布的镜像，拉取 `ghcr.io/snakedreamy/rkserve:<version>`，在 Quadlet 单元中把 `Image=` 设为该名称，并去掉 `Pull=never`。可跳过下面的导出/导入步骤；运行用户、secret、插件目录和 Caddy 的配置仍然适用。
+
+下面的导出/导入步骤用于把本地构建的镜像从编译用户交给独立的运行用户。二者的 Rootless Podman storage 相互隔离，因此使用 Docker archive 交接。
 
 ## 1. 管理员一次性准备运行用户
 

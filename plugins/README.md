@@ -2,22 +2,22 @@
 
 English | [简体中文](README.zh-CN.md)
 
-Plugin sources, third-party licenses, model conversion and packaging tools live here, separate from the `server/` application. GitHub Actions has converted, built and packaged all five plugins; a GitHub Release has not been published.
+Plugin sources, third-party licenses, model conversion and packaging tools live here, separate from the `server/` application.
 
 ## Installation
 
 Each package contains `plugin.toml`, `bin/worker`, `lib/`, `assets/` and `licenses/`. Users do not need to compile anything. Installation requires Bash, Python 3, curl, tar, sha256sum and flock. Running a plugin requires a compatible ARM64 system, an RK3576 and the host NPU driver.
 
 ```bash
-plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
 ```
 
-`--from` needs the `rkserve-plugin-*.tar.gz` archives and either `SHA256SUMS` or each archive's `*.tar.gz.sha256` sidecar from `package.sh`. After a `plugins-v*` tag is published, `--release` can download those files from GitHub Releases instead. Stop RKServe before updating plugins and restart it afterward. Plugins are native programs, not a security sandbox: install packages only from trusted sources.
+The installer downloads `rkserve-plugin-*.tar.gz` from GitHub Releases (default tag `plugins-v0.1.0`) and verifies SHA-256. Use `--from DIR` to install from local archives instead; the directory must contain the archives and either `SHA256SUMS` or each archive's `*.tar.gz.sha256` sidecar. Stop RKServe before updating plugins and restart it afterward. Plugins are native programs, not a security sandbox: install packages only from trusted sources.
 
 ## Sources and builds
 
 - `<plugin>/worker/`: Rust worker and C/C++ bridge.
-- `<plugin>/convert/`: model conversion steps and provenance records.
+- `<plugin>/convert/`: model conversion steps and source records.
 - `<plugin>/licenses/`: component licenses and source notices.
 - `vendor/`: third-party sources shared by multiple plugins.
 - `deps.lock`: pinned download URLs and SHA-256 hashes for third-party headers and runtime libraries.
@@ -25,13 +25,13 @@ plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo2
 
 `server/` and `plugins/` use separate Cargo workspaces. Plugins reference `server/protocol` in this repository. Core does not link plugins, RKNN or models.
 
-Plugin workers still need to be compiled by the publisher; users install the resulting binaries. ARM64 compilation and x86_64 model conversion are intended to run in GitHub Actions, without requiring a full local build. The manual worker build entry point is:
+Plugin workers still need to be compiled by the publisher; users install the resulting binaries. ARM64 compilation and x86_64 model conversion run in GitHub Actions. The manual worker build entry point is:
 
 ```bash
 plugins/yolo26/build.sh /absolute/path/to/worker-output
 ```
 
-Downloaded dependencies are stored in the Git-ignored `.deps/` directory. Do not commit it or conversion work directories. Conversion, ARM64 worker builds and packaging have succeeded on GitHub Actions. On-device inference of the new models, and a public plugin Release, are separate steps.
+Downloaded dependencies are stored in the Git-ignored `.deps/` directory. Do not commit it or conversion work directories.
 
 ## Licenses
 

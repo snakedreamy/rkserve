@@ -25,7 +25,7 @@ RKServe 是面向 Rockchip RK35xx 边缘设备的 NPU 服务平台。`rkserve-co
 
 ## 插件
 
-Core 本身不带插件。每个插件是独立安装包，按需安装即可。模型均针对 **RK3576** 转换；其他 RK35xx 芯片需要自行转换。GitHub Release 尚未发布。
+Core 本身不带插件。按需从 GitHub Release 安装即可。模型均针对 **RK3576** 转换；其他 RK35xx 芯片需要自行转换。
 
 | 插件 | 能力 | 模型 |
 | --- | --- | --- |
@@ -36,10 +36,10 @@ Core 本身不带插件。每个插件是独立安装包，按需安装即可。
 | `matcha-tts` | 中英文语音合成 | Matcha-TTS + Vocos |
 
 ```bash
-plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
 ```
 
-插件安装包由 GitHub Actions 从固定版本的上游来源构建。模型和随附第三方组件保留各自许可证（包括 AGPL-3.0、GPL-3.0 和 Rockchip RKNN SDK 许可），安装或再分发前请先阅读 [plugins/README.zh-CN.md](plugins/README.zh-CN.md)。
+安装脚本从 GitHub Release 下载 `rkserve-plugin-*.tar.gz` 并校验 SHA-256。本地归档可用 `--from DIR`。模型和随附第三方组件保留各自许可证（包括 AGPL-3.0、GPL-3.0 和 Rockchip RKNN SDK 许可），详见 [plugins/README.zh-CN.md](plugins/README.zh-CN.md)。
 
 ## 目录
 
@@ -61,15 +61,16 @@ plugins/                插件源码、模型转换与打包
 
 Git 仓库不提交模型权重、编译后的 Worker 或下载的运行库；小型数据文件和控制台字体仍保留。
 
-## 快速开始：预构建镜像
+## 快速开始：镜像与插件
 
-推送版本 tag 后，`Image` 工作流会发布包含 Core 和控制台的 `linux/arm64` 镜像。**以下命令需要镜像已经成功发布：**
+发布的 `linux/arm64` 镜像只包含 Core 和控制台。插件安装在宿主机上，再挂载进容器。
 
 ```bash
 podman pull ghcr.io/snakedreamy/rkserve:latest
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26
 ```
 
-把插件安装到宿主机目录，并挂载到容器内的 `/opt/rkserve/plugins`。镜像还需要 NPU/RGA 设备映射和 API Key secret，完整命令见[安全与 Caddy 部署](server/docs/security-and-deployment.zh-CN.md)；长期运行可使用 [Rootless Quadlet 部署](server/deploy/quadlet/README.zh-CN.md)。
+创建 API Key secret，映射 NPU/RGA 设备，并把插件目录挂载到 `/opt/rkserve/plugins`。完整命令见[安全与 Caddy 部署](server/docs/security-and-deployment.zh-CN.md)；长期运行可使用 [Rootless Quadlet 部署](server/deploy/quadlet/README.zh-CN.md)。
 
 ## 从源码构建
 
@@ -80,7 +81,7 @@ podman pull ghcr.io/snakedreamy/rkserve:latest
 (cd server/frontend && corepack enable pnpm && pnpm install --frozen-lockfile && pnpm run build)
 ```
 
-插件通常直接从 Release 安装。如需自行构建，见 [plugins/README.zh-CN.md](plugins/README.zh-CN.md)。
+插件从 GitHub Release 安装。如需自行构建，见 [plugins/README.zh-CN.md](plugins/README.zh-CN.md)。
 
 ## 运行
 

@@ -366,7 +366,7 @@ async fn worker_manager(
                                 severity: EventSeverity::Error,
                                 category: "supervisor",
                                 kind: "circuit_open",
-                                message: "插件已熔断，NPU lease released",
+                                message: "Plugin circuit breaker opened; NPU lease released",
                                 detail: Some(error_message),
                                 plugin_id: Some(plugin.summary.id.clone()),
                                 lease_id: Some(allocation.lease_id.clone()),

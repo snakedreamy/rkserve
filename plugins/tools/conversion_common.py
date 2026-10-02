@@ -1,4 +1,4 @@
-"""转换专用的小工具：校验下载、SDK 返回码、静态契约和源码保留。"""
+"""Conversion helpers: download checks, SDK return codes, static contracts and retained sources."""
 from __future__ import annotations
 
 import hashlib
@@ -89,7 +89,7 @@ def fetch_inputs(recipe: Path, out: Path) -> dict[str, Path]:
 
 
 def retain_git_source(out: Path, url: str, commit: str, digest: str, name: str) -> None:
-    """保留完整上游源码；检查固定提交与 git archive 的预先核验 SHA。"""
+    """Retain complete upstream source and check the pinned commit and git-archive SHA."""
     repo = Path(os.environ["CONVERSION_WORK_DIR"]) / f"{name}-git"
     subprocess.run(["git", "init", str(repo)], check=True)
     subprocess.run(["git", "-C", str(repo), "fetch", "--depth=1", url, commit], check=True)
@@ -120,14 +120,14 @@ def build_rknn(onnx: Path, output: Path, *, config: dict, load: dict | None = No
         checked(rknn.build(do_quantization=False, **(build or {})), "build")
         checked(rknn.export_rknn(str(output)), "export_rknn")
     finally:
-        # release 在此 SDK 中没有规定整数返回值。
+        # This SDK does not document an integer return value for release.
         checked(rknn.release(), "release", allow_none=True)
     if not output.is_file() or not output.stat().st_size:
         raise RuntimeError(f"SDK did not produce a model: {output}")
 
 
 def inspect_rknn(path: Path, inputs: list[list[int]], outputs: list[list[int]]) -> dict:
-    """只读文件头，不加载运行时、不初始化 NPU。"""
+    """Read the file header only; do not load the runtime or initialize the NPU."""
     with path.open("rb") as stream:
         header = stream.read(64)
         if len(header) != 64 or header[:4] != b"RKNN" or struct.unpack_from("<Q", header, 8)[0] != 6:
@@ -147,7 +147,7 @@ def inspect_rknn(path: Path, inputs: list[list[int]], outputs: list[list[int]]) 
     for kind, expected in (("input", inputs), ("output", outputs)):
         edges = sorted((e for e in metadata["graph"] if e["left"] == kind), key=lambda e: e["left_tensor_id"])
         actual = [tensors[e["right_tensor_id"]]["size"] for e in edges]
-        # RKNN 把 ONNX scalar 暴露为单元素向量。
+        # RKNN exposes ONNX scalars as single-element vectors.
         if actual != [shape or [1] for shape in expected]:
             raise RuntimeError(f"{path.name} {kind} shape mismatch: {actual}; expected {expected}")
     return metadata
@@ -172,7 +172,7 @@ def write_hashes(root: Path, files: list[Path], target: Path) -> None:
 
 
 def finalize(recipe: Path, out: Path) -> None:
-    # 产物存在还不够；原始输入、源码和环境证据缺失时同样不能发布。
+    # Presence of outputs is not enough; missing inputs, sources or environment evidence also blocks publish.
     for item in json.loads((recipe / "inputs.json").read_text()):
         verify(out / "licenses/model-sources/inputs" / item["path"], item["sha256"])
     required = ["licenses/model-sources/INPUTS.json", "licenses/model-sources/environment/requirements.txt",
@@ -193,7 +193,7 @@ def finalize(recipe: Path, out: Path) -> None:
         path = out / relative
         if path.is_symlink() or path.stat().st_size == 0:
             raise RuntimeError(f"Artifact is not a nonempty regular file: {path}")
-    # 原始下载、转换源码、许可证、wheel 和中间图均保留；虚拟环境不属于源码包。
+    # Retain original downloads, conversion sources, licenses, wheels and intermediate graphs; the venv is not part of the source package.
     intermediates = out / "licenses/model-sources/intermediates"
     intermediates.mkdir()
     for suffix in ("*.onnx", "*.model", "*.data", "*.quantization.cfg"):

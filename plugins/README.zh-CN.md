@@ -2,17 +2,17 @@
 
 [English](README.md) | 简体中文
 
-插件源码、第三方许可、模型转换及打包工具集中在此目录，与 `server/` 本体分开。GitHub Actions 已完成五个插件的转换、Worker 构建和打包；GitHub Release 尚未发布。
+插件源码、第三方许可、模型转换及打包工具集中在此目录，与 `server/` 本体分开。
 
 ## 安装
 
 插件包包含 `plugin.toml`、`bin/worker`、`lib/`、`assets/` 和 `licenses/`。使用者不用编译。安装需要 Bash、Python 3、curl、tar、sha256sum 和 flock；运行需要匹配的 ARM64 系统、RK3576 及宿主 NPU 驱动。
 
 ```bash
-plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
+plugins/install.sh --dest "$HOME/rkserve/plugins" yolo26 sensevoice-asr
 ```
 
-`--from` 目录中须有 `rkserve-plugin-*.tar.gz`，以及 `SHA256SUMS` 或 `package.sh` 生成的 `*.tar.gz.sha256`。在发布 `plugins-v*` 标签之后，也可用 `--release` 从 GitHub Release 下载。更新时先停止 RKServe，安装完成后重启。插件是本地原生程序，不是安全沙箱，只安装可信来源的包。
+安装脚本从 GitHub Release 下载 `rkserve-plugin-*.tar.gz`（默认标签 `plugins-v0.1.0`）并校验 SHA-256。本地归档可用 `--from DIR`；目录中须有这些归档，以及 `SHA256SUMS` 或 `package.sh` 生成的 `*.tar.gz.sha256`。更新时先停止 RKServe，安装完成后重启。插件是本地原生程序，不是安全沙箱，只安装可信来源的包。
 
 ## 源码与构建
 
@@ -25,13 +25,13 @@ plugins/install.sh --from /path/to/packages --dest "$HOME/rkserve/plugins" yolo2
 
 `server/` 与 `plugins/` 使用独立 Cargo workspace，插件引用本仓库的 `server/protocol`。Core 不链接插件、RKNN 或模型。
 
-插件 Worker 仍需由发布者编译；用户安装的是编译后的包。预期由 GitHub Actions 完成 ARM64 编译和 x86_64 模型转换，本地无需全量编译。手动构建入口为：
+插件 Worker 仍需由发布者编译；用户安装的是编译后的包。ARM64 编译和 x86_64 模型转换由 GitHub Actions 完成。手动构建入口为：
 
 ```bash
 plugins/yolo26/build.sh /absolute/path/to/worker-output
 ```
 
-下载依赖保存在被 Git 忽略的 `.deps/`。不要把该目录或转换工作目录提交到仓库。GitHub Actions 上的模型转换、ARM64 Worker 构建和打包已经通过。新模型的板端推理，以及公开的插件 Release，是另一步。
+下载依赖保存在被 Git 忽略的 `.deps/`。不要把该目录或转换工作目录提交到仓库。
 
 ## 许可证
 

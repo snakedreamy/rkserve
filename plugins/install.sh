@@ -43,7 +43,7 @@ for tool in curl sha256sum tar python3 flock; do
   fi
 done
 
-# 同一批次不重复更新同一插件，避免覆盖回滚目录。
+# Do not install the same plugin twice in one run; that would overwrite the rollback copy.
 for ((i = 0; i < ${#plugins[@]}; i++)); do
   for ((j = 0; j < i; j++)); do
     if [[ "${plugins[i]}" == "${plugins[j]}" ]]; then
@@ -53,7 +53,7 @@ for ((i = 0; i < ${#plugins[@]}; i++)); do
   done
 done
 mkdir -p "$dest"
-# 避免两个安装进程同时替换插件；锁文件保留以防 inode 竞争。
+# Serialize installers so two processes cannot replace the same plugin; keep the lock file to avoid inode races.
 exec 9>"${dest%/}/.install.lock"
 flock -n 9 || { echo "Error: another installer is running." >&2; exit 1; }
 work_dir="$(mktemp -d "${dest%/}/.install.XXXXXX")"
@@ -113,7 +113,7 @@ for plugin in "${plugins[@]}"; do
 
   staging="${work_dir}/${plugin}.new"
   mkdir -p "$staging"
-  # 只接受插件目录内的普通文件和目录；拒绝链接、设备与路径穿越。
+  # Accept only regular files and directories inside the plugin directory; reject links, devices and path traversal.
   python3 - "${work_dir}/${archive}" "$plugin" "$staging" <<'PYTHON'
 import pathlib
 import sys
@@ -128,7 +128,7 @@ with tarfile.open(archive, "r:gz") as bundle:
         if (path.is_absolute() or ".." in path.parts or not path.parts
                 or path.parts[0] != plugin or not (member.isfile() or member.isdir())
                 or str(path) in seen):
-            raise SystemExit(f"拒绝不安全的归档成员：{member.name}")
+            raise SystemExit(f"refusing unsafe archive member: {member.name}")
         seen.add(str(path))
         member.mode &= 0o777
     bundle.extractall(destination, members=members)

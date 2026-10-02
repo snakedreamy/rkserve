@@ -1,4 +1,4 @@
-"""插件安装与打包的无模型测试，不编译 Worker。"""
+"""Plugin install and packaging tests without models or worker compilation."""
 import hashlib
 import io
 import json

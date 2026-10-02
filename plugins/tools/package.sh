@@ -39,7 +39,7 @@ for blocked in plugin.toml bin lib; do
   fi
 done
 
-# 失败或被更改的转换产物不得进入发布包。
+# Failed or altered conversion output must not enter a release package.
 (cd "$models_dir" && sha256sum --strict --check licenses/OUTPUTS.sha256)
 work_dir="$(mktemp -d)"
 archive_tmp=''
@@ -55,7 +55,7 @@ cp -R "${plugin_dir}/licenses" "${stage}/licenses"
 install -m 0644 "${repo_root}/LICENSE" "${stage}/licenses/RKServe-Apache-2.0"
 install -m 0644 "${repo_root}/NOTICE" "${stage}/licenses/RKServe-NOTICE"
 cp -R "${worker_dir}/." "${stage}/"
-# Worker 输出不得覆盖仓库清单与项目许可。
+# Worker output must not overwrite the repository manifest or project licenses.
 install -m 0644 "${plugin_dir}/plugin.toml" "${stage}/plugin.toml"
 install -m 0644 "${repo_root}/LICENSE" "${stage}/licenses/RKServe-Apache-2.0"
 install -m 0644 "${repo_root}/NOTICE" "${stage}/licenses/RKServe-NOTICE"
@@ -94,7 +94,7 @@ fi
 install -m 0644 "${work_dir}/BUILD-INFO.txt" "${stage}/licenses/BUILD-INFO.txt"
 
 chmod -R u=rwX,go=rX "$stage"
-# Actions artifact 下载不保留执行权限，需要在打包前显式恢复。
+# Artifact downloads from Actions do not keep the executable bit; restore it before packaging.
 chmod 0755 "${stage}/bin/worker"
 required_libs=(lib/librknnrt.so)
 case "$plugin" in

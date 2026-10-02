@@ -78,7 +78,7 @@ If both Caddy and RKServe are containerized, place them in one Podman pod and ke
 2. A Rust builder compiles Core.
 3. The Ubuntu 24.04 runtime copies only Core, the console and the project license.
 
-The image contains no plugins, models or RKNN libraries; plugins are installed on the host and mounted read-only at `/opt/rkserve/plugins`. Worker builds target Debian 11; the minimum runtime glibc requirement of the complete package, including downloaded libraries, still needs validation. Rust, Node, GCC and JavaScript package managers are neither installed on the host nor included in the runtime image. Build caches and base images stay in the current user's Podman storage. The frontend pins Node 20.20.2 and pnpm 10.34.5 for Vite 8, with `pnpm-lock.yaml`; this avoids observed npm failures that returned success in ARM containers.
+The image contains no plugins, models or RKNN libraries; plugins are installed on the host and mounted read-only at `/opt/rkserve/plugins`. Worker binaries are built on Debian 11 (glibc 2.31). Rust, Node, GCC and JavaScript package managers are neither installed on the host nor included in the runtime image. Build caches and base images stay in the current user's Podman storage. The frontend pins Node 20.20.2 and pnpm 10.34.5 for Vite 8, with `pnpm-lock.yaml`.
 
 Host requirements:
 
@@ -130,7 +130,7 @@ The key is not embedded in the image, Git or container environment. At runtime i
 
 ## Run as container root under rootless Podman
 
-The example uses a local `localhost/rkserve:latest` image. Once GitHub Actions has published an image, run `podman pull ghcr.io/snakedreamy/rkserve:latest` and substitute that image name.
+The example below uses the published image. To build locally instead, run `./server/deploy/build-container.sh localhost/rkserve:latest` and substitute that image name.
 
 For host Caddy, this example uses host networking but listens only on loopback. The [Quadlet guide](../deploy/quadlet/README.md) provides an isolated-network alternative. First create a persistent volume and install plugins into a host directory:
 
@@ -162,7 +162,7 @@ podman run -d \
   --pids-limit 256 \
   --env RKSERVE_LISTEN=127.0.0.1:8080 \
   --env RKSERVE_TRUSTED_PROXIES=127.0.0.1,::1 \
-  localhost/rkserve:latest
+  ghcr.io/snakedreamy/rkserve:latest
 ```
 
 Omit `/dev/dma_heap/*` mappings for nodes absent on your device. `renderD129` is required for the RK3576 NPU; `/dev/rga` accelerates image preprocessing.

@@ -1,59 +1,18 @@
 name: Plugins
 
-# Converts every plugin's models from pinned upstream sources, builds the
-# workers and packages one archive per plugin. Manual runs keep the packages
-# as workflow artifacts; pushing a plugins-v* tag also publishes a release.
-# The ci/plugin-pipeline branch is a verification run only: it does not tag
-# or publish. A status branch is written so a deploy key can poll the result.
+# Converts pinned models, builds ARM64 workers, and packages one archive per
+# plugin. Pushing a plugins-v* tag publishes those archives as a GitHub Release.
+# workflow_dispatch builds the same packages without creating a release.
 
 on:
   push:
     tags: ["plugins-v*"]
-    branches: ["ci/plugin-pipeline"]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  ping:
-    name: Record start
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - name: Record that the workflow started
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          work=$(mktemp -d)
-          cd "$work"
-          if git clone --depth=1 --branch ci/plugin-pipeline-status \
-              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo; then
-            cd repo
-          else
-            mkdir repo && cd repo
-            git init
-            git checkout -b ci/plugin-pipeline-status
-            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          fi
-          git config user.name rkserve-ci
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          mkdir -p "report/${GITHUB_RUN_ID}"
-          printf '{"event":"%s","sha":"%s","ref":"%s","url":"%s","status":"started"}\n' \
-            "${GITHUB_EVENT_NAME}" "${GITHUB_SHA}" "${GITHUB_REF}" \
-            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            > "report/${GITHUB_RUN_ID}/started.json"
-          git add "report/${GITHUB_RUN_ID}/started.json"
-          git commit -m "started ${GITHUB_RUN_ID}"
-          for _ in 1 2 3 4 5 6 7 8; do
-            git pull --rebase origin ci/plugin-pipeline-status || true
-            git push -u origin HEAD:ci/plugin-pipeline-status && exit 0
-            sleep 3
-          done
-          exit 1
-
   models:
     name: Convert ${{ matrix.plugin }}
     runs-on: ubuntu-24.04
@@ -149,49 +108,6 @@ jobs:
           path: dist
           if-no-files-found: error
           compression-level: 0
-
-  report:
-    if: always()
-    continue-on-error: true
-    needs: [models, workers, package]
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-      actions: read
-    steps:
-      - name: Record run result
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          work=$(mktemp -d)
-          cd "$work"
-          # gh needs GH_REPO; this job does not check out the application repo first.
-          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --json conclusion,status,url,event,headSha,jobs > result.json
-          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > failed.log || true
-          if git clone --depth=1 --branch ci/plugin-pipeline-status \
-              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo; then
-            cd repo
-          else
-            mkdir repo && cd repo
-            git init
-            git checkout -b ci/plugin-pipeline-status
-            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          fi
-          git config user.name rkserve-ci
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          mkdir -p "report/${GITHUB_RUN_ID}"
-          cp "$work/result.json" "report/${GITHUB_RUN_ID}/result.json"
-          cp "$work/failed.log" "report/${GITHUB_RUN_ID}/failed.log"
-          git add "report/${GITHUB_RUN_ID}"
-          git commit -m "result ${GITHUB_RUN_ID}"
-          for _ in 1 2 3 4 5 6 7 8; do
-            git pull --rebase origin ci/plugin-pipeline-status || true
-            git push -u origin HEAD:ci/plugin-pipeline-status && exit 0
-            sleep 3
-          done
-          exit 1
 
   release:
     if: startsWith(github.ref, 'refs/tags/plugins-v')

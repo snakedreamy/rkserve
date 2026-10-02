@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 转换专用入口；不依赖或改动现有插件构建工具。
+# Conversion entry point; it does not depend on or change the plugin build tools.
 set -euo pipefail
 if [[ $# != 2 || $2 != /* ]]; then
   echo 'Usage: conversion-run.sh <recipe-directory> <absolute-output-directory>' >&2
@@ -8,7 +8,7 @@ fi
 recipe=$(realpath "$1")
 tools=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 plugin=$(basename "$(dirname "$recipe")")
-# 防止把 recipe 复制进其自己的输出子目录造成递归复制。
+# Refuse an output directory inside the recipe, which would recurse while copying sources.
 candidate=$(realpath -m "$2")
 if [[ "$candidate" == "$recipe" || "$candidate" == "$recipe/"* ]]; then
   echo 'Output directory must not be inside the conversion recipe directory' >&2
@@ -16,7 +16,7 @@ if [[ "$candidate" == "$recipe" || "$candidate" == "$recipe/"* ]]; then
 fi
 python=${CONVERSION_PYTHON:-python3.11}
 "$python" -c 'import platform,sys; assert sys.version_info[:2] == (3,11), "Python 3.11 is required"; assert platform.system() == "Linux" and platform.machine() == "x86_64", "Conversion requires Linux x86_64"'
-# 不允许复用旧产物，防止失败时把残留文件误判为本次成功结果。
+# Refuse a non-empty output directory so leftover files cannot be treated as this run's result.
 if [[ -L $2 || ( -e $candidate && ( ! -d $candidate || -n $(find "$candidate" -mindepth 1 -maxdepth 1 -print -quit) ) ) ]]; then
   echo 'Output directory must be absent or empty' >&2
   exit 2
@@ -29,7 +29,7 @@ if [[ -n "${CONVERSION_INPUT_CACHE:-}" && -d "$CONVERSION_INPUT_CACHE" ]]; then
   cp -a "$CONVERSION_INPUT_CACHE"/. "$sources/inputs/"
 fi
 printf 'Conversion incomplete; do not publish.\n' > "$out/licenses/CONVERSION-INCOMPLETE"
-# 临时环境在输出目录外，避免产物包混入 venv、缓存或 Git 工作区。
+# Keep the temporary environment outside the output so venv, caches or Git state cannot enter the package.
 work=$(mktemp -d /tmp/rkserve-conversion.XXXXXXXX)
 cleanup() {
   status=$?
@@ -45,7 +45,7 @@ cleanup() {
 trap cleanup EXIT
 mkdir -p "$sources/conversion/plugins/$plugin" "$sources/conversion/plugins/tools"
 cp -a "$recipe" "$sources/conversion/plugins/$plugin/convert"
-# 仅保留本次使用的转换工具，不复制正在开发的其他工具。
+# Keep only the conversion tools used by this run; do not copy unrelated tools still in development.
 cp "$tools"/conversion-{run.sh,requirements.txt} "$tools/conversion_common.py" "$sources/conversion/plugins/tools/"
 recipe="$sources/conversion/plugins/$plugin/convert"
 tools="$sources/conversion/plugins/tools"
@@ -60,7 +60,7 @@ mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TORCH_HOME" "$YOLO_CONFIG_DIR"
 "$python" -m venv "$work/venv"
 py="$work/venv/bin/python"
 {
-  # --no-deps 防止解析器引入未固定依赖；安装后 pip check 必须通过。
+  # --no-deps prevents unpinned transitive dependencies; pip check must pass after install.
   "$py" -m pip download --no-deps --only-binary=:all: \
     --index-url https://pypi.org/simple --extra-index-url https://download.pytorch.org/whl/cpu \
     --dest "$sources/environment/wheels" -r "$sources/environment/requirements.txt"
@@ -77,7 +77,7 @@ py="$work/venv/bin/python"
   cd "$work"
   "$py" "$recipe/convert.py" "$out"
 } 2>&1 | tee "$work/conversion.log"
-# 等待管道关闭后复制日志，避免哈希清单覆盖一个仍在写入的文件。
+# Copy the log after the pipeline closes so the hash list does not cover a file still being written.
 cp "$work/conversion.log" "$sources/environment/conversion.log"
 "$py" "$tools/conversion_common.py" finalize "$recipe" "$out"
 rm "$out/licenses/CONVERSION-INCOMPLETE"

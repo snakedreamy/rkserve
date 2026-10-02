@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 仅接收绝对输出路径；依赖安装与转换仅在显式调用时执行。
+# Absolute output path only; dependency install and conversion run when this script is invoked.
 set -euo pipefail
 if [[ $# != 1 || $1 != /* ]]; then
   echo 'Usage: convert.sh <absolute-output-directory>' >&2

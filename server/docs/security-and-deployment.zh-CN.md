@@ -78,7 +78,7 @@ RKSERVE_CONSOLE_ROOT=server/frontend/dist \
 2. Rust builder 编译 Core；
 3. 最终 Ubuntu 24.04 镜像只复制 Core、控制台和项目许可证。
 
-镜像不包含任何插件、模型或 RKNN 运行库；插件安装在宿主机上，以只读方式挂载到 `/opt/rkserve/plugins`。Worker 计划在 Debian 11 中编译；整个插件包（包括下载的运行库）的最低 glibc 要求及镜像兼容性仍需验证。Rust、Node、GCC 和 JavaScript 包管理器不会安装到宿主，也不会进入最终镜像。构建缓存和基础镜像只保存在当前普通用户的 Podman storage 中。前端 Builder 固定使用 Vite 8 支持的 Node 20.20.2 和 pnpm 10.34.5，并通过 `pnpm-lock.yaml` 冻结依赖；这避开了 npm 在 ARM 容器内可能报错却返回成功状态的问题。
+镜像不包含任何插件、模型或 RKNN 运行库；插件安装在宿主机上，以只读方式挂载到 `/opt/rkserve/plugins`。Worker 在 Debian 11（glibc 2.31）上编译。Rust、Node、GCC 和 JavaScript 包管理器不会安装到宿主，也不会进入最终镜像。构建缓存和基础镜像只保存在当前普通用户的 Podman storage 中。前端 Builder 固定使用 Vite 8 支持的 Node 20.20.2 和 pnpm 10.34.5，并通过 `pnpm-lock.yaml` 冻结依赖。
 
 宿主机只需要：
 
@@ -130,7 +130,7 @@ unset RKSERVE_KEY
 
 ## 以容器内 root、宿主 rootless 方式运行
 
-以下示例使用本地构建的 `localhost/rkserve:latest`。在 GitHub Actions 已成功发布镜像后，也可以使用预构建镜像：先执行 `podman pull ghcr.io/snakedreamy/rkserve:latest`，再把命令中的镜像名替换为 `ghcr.io/snakedreamy/rkserve:latest`。
+以下示例使用已发布的镜像。若要在本地构建，运行 `./server/deploy/build-container.sh localhost/rkserve:latest`，再把命令中的镜像名替换为该本地标签。
 
 以下示例在宿主运行 Caddy，RKServe 使用 host network 但只监听回环地址。[Quadlet 指南](../deploy/quadlet/README.zh-CN.md)提供独立网络命名空间方案。先创建 Podman 管理的持久卷，并把插件安装到宿主机目录：
 
@@ -162,7 +162,7 @@ podman run -d \
   --pids-limit 256 \
   --env RKSERVE_LISTEN=127.0.0.1:8080 \
   --env RKSERVE_TRUSTED_PROXIES=127.0.0.1,::1 \
-  localhost/rkserve:latest
+  ghcr.io/snakedreamy/rkserve:latest
 ```
 
 如果设备没有某个 `/dev/dma_heap/*` 节点，可删除对应参数；`renderD129` 是 RK3576 NPU 的必要设备，`/dev/rga` 用于图像预处理加速。

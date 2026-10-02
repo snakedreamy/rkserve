@@ -20,7 +20,7 @@ The fixed encoder holds about 20 seconds of audio, but RK3576 FP16 can be numeri
 - 44.1 kHz stereo 24-bit PCM input: English recognition verified after resampling.
 - `core0_1` can reduce latency, but FP16 trailing punctuation may vary; the default is one core for stability.
 
-Short segments are padded to 10 seconds of silence before feature extraction to avoid FP16 sensitivity to feature length. Returned duration and timestamps still use the original input, not the padded length. These are historical measurements, not new benchmarks from the localization change.
+Short segments are padded to 10 seconds of silence before feature extraction to avoid FP16 sensitivity to feature length. Returned duration and timestamps still use the original input, not the padded length.
 
 ## Build
 

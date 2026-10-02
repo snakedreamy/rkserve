@@ -43,6 +43,6 @@ run/
 *.swp
 *~
 
-# Python 转换与测试缓存
+# Python conversion and test caches
 __pycache__/
 *.pyc
