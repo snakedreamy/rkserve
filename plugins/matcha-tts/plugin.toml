@@ -1,0 +1,91 @@
+schema_version = 2
+
+[plugin]
+id = "matcha-tts"
+name = "Matcha Chinese/English TTS"
+version = "0.1.0"
+protocol_version = 2
+executable = "bin/worker"
+
+[[capabilities]]
+id = "audio.speech"
+name = "Fast Chinese/English speech synthesis"
+description = "The Matcha acoustic network and Vocos vocoder run on the RK3576 NPU, with FP32 duration calibration to avoid pauses and repetition in short English phrases."
+input_kind = "text"
+accepted_content_types = ["text/plain"]
+max_input_bytes = 32768
+output_kind = "audio"
+output_content_type = "audio/wav"
+
+[capabilities.presentation]
+renderer = "audio_player"
+input_hint = "One model supports Chinese, English and mixed-language text. Long text is split into segments and synthesized in full."
+input_placeholder = "Enter Chinese, English or mixed-language text to synthesize…"
+text_examples = [
+  "你好，欢迎使用运行在瑞芯微 NPU 上的快速语音合成服务。",
+  "Hello! Is there something you want to practise in English today?",
+  "今天的 build 已经完成，欢迎测试 Matcha TTS。"
+]
+
+[[capabilities.parameters]]
+key = "speed"
+label = "Speech speed"
+description = "1.0 is the original model speed; higher values produce faster speech."
+kind = "number"
+required = false
+default = "1.0"
+min = 0.7
+max = 1.4
+
+[[capabilities.parameters]]
+key = "noise_scale"
+label = "Voice variation"
+description = "Controls generation variation. The default is 0.667 and usually needs no adjustment."
+kind = "number"
+required = false
+default = "0.667"
+min = 0.3
+max = 1.0
+
+[[configuration.fields]]
+key = "speed"
+label = "Default speech speed"
+description = "Used when a request does not specify a speech speed."
+kind = "number"
+required = false
+default = "1.0"
+min = 0.7
+max = 1.4
+
+[[configuration.fields]]
+key = "noise_scale"
+label = "Default voice variation"
+description = "Used when a request does not specify voice variation."
+kind = "number"
+required = false
+default = "0.667"
+min = 0.3
+max = 1.0
+
+[resources.npu]
+allowed_masks = ["core0", "core1", "core0_1"]
+default_mask = "core0_1"
+max_concurrency = 1
+queue_size = 16
+request_timeout_ms = 120000
+
+# Localized display text; IDs, configuration values and model paths stay unchanged.
+[translations.zh-CN]
+"plugin.name" = "Matcha 中英文 TTS"
+"capabilities.audio.speech.name" = "快速中英文语音合成"
+"capabilities.audio.speech.description" = "Matcha 主声学网络和 Vocos 声码器在 RK3576 NPU 上运行，并用 FP32 时长校准避免短英文停顿和重复。"
+"capabilities.audio.speech.presentation.input_hint" = "同一个模型支持中文、英文和中英混读；长文本会自动分段并完整合成。"
+"capabilities.audio.speech.presentation.input_placeholder" = "输入要合成的中文、英文或中英混合文本……"
+"capabilities.audio.speech.parameters.speed.label" = "语速"
+"capabilities.audio.speech.parameters.speed.description" = "1.0 为模型原始语速；数值越大，朗读越快。"
+"capabilities.audio.speech.parameters.noise_scale.label" = "音色变化"
+"capabilities.audio.speech.parameters.noise_scale.description" = "控制生成变化程度，默认 0.667；通常无需调整。"
+"configuration.speed.label" = "默认语速"
+"configuration.speed.description" = "请求未单独指定语速时使用此值。"
+"configuration.noise_scale.label" = "默认音色变化"
+"configuration.noise_scale.description" = "请求未单独指定音色变化时使用此值。"

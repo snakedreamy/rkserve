@@ -1,0 +1,218 @@
+name: Plugins
+
+# Converts every plugin's models from pinned upstream sources, builds the
+# workers and packages one archive per plugin. Manual runs keep the packages
+# as workflow artifacts; pushing a plugins-v* tag also publishes a release.
+# The ci/plugin-pipeline branch is a verification run only: it does not tag
+# or publish. A status branch is written so a deploy key can poll the result.
+
+on:
+  push:
+    tags: ["plugins-v*"]
+    branches: ["ci/plugin-pipeline"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    name: Record start
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Record that the workflow started
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d)
+          cd "$work"
+          if git clone --depth=1 --branch ci/plugin-pipeline-status \
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo; then
+            cd repo
+          else
+            mkdir repo && cd repo
+            git init
+            git checkout -b ci/plugin-pipeline-status
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git config user.name rkserve-ci
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          mkdir -p "report/${GITHUB_RUN_ID}"
+          printf '{"event":"%s","sha":"%s","ref":"%s","url":"%s","status":"started"}\n' \
+            "${GITHUB_EVENT_NAME}" "${GITHUB_SHA}" "${GITHUB_REF}" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            > "report/${GITHUB_RUN_ID}/started.json"
+          git add "report/${GITHUB_RUN_ID}/started.json"
+          git commit -m "started ${GITHUB_RUN_ID}"
+          for _ in 1 2 3 4 5 6 7 8; do
+            git pull --rebase origin ci/plugin-pipeline-status || true
+            git push -u origin HEAD:ci/plugin-pipeline-status && exit 0
+            sleep 3
+          done
+          exit 1
+
+  models:
+    name: Convert ${{ matrix.plugin }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: [matcha-tts, sensevoice-asr, yolo26, yolov8-pose, zipformer-asr]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install conversion libraries
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1 libglib2.0-0
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/input-cache
+          key: convert-inputs-${{ matrix.plugin }}-${{ hashFiles(format('plugins/{0}/convert/inputs.json', matrix.plugin)) }}
+          restore-keys: convert-inputs-${{ matrix.plugin }}-
+      - name: Convert models
+        env:
+          CONVERSION_PYTHON: python3
+          CONVERSION_INPUT_CACHE: ${{ runner.temp }}/input-cache
+        run: plugins/${{ matrix.plugin }}/convert/convert.sh "$RUNNER_TEMP/models"
+      - name: Keep downloaded inputs
+        if: always()
+        run: |
+          src="$RUNNER_TEMP/models/licenses/model-sources/inputs"
+          if [ -d "$src" ]; then
+            mkdir -p "$RUNNER_TEMP/input-cache"
+            cp -a "$src"/. "$RUNNER_TEMP/input-cache/"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: models-${{ matrix.plugin }}
+          path: ${{ runner.temp }}/models
+          if-no-files-found: error
+          retention-days: 7
+
+  workers:
+    name: Build ${{ matrix.plugin }}
+    runs-on: ubuntu-24.04-arm
+    # Debian 11 (glibc 2.31) keeps the packages usable on older board images.
+    container: docker.io/library/rust:1.88-bullseye
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: [matcha-tts, sensevoice-asr, yolo26, yolov8-pose, zipformer-asr]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        # The rust image's /bin/sh is dash; it rejects `set -o pipefail`.
+        run: |
+          set -eu
+          # Live debian-security 404s; archive.debian.org has no bullseye-security suite.
+          # cmake and its deps are in bullseye main. git/curl/g++ are already in the image.
+          rm -f /etc/apt/sources.list.d/*
+          printf 'deb http://archive.debian.org/debian bullseye main\n' > /etc/apt/sources.list
+          printf 'Acquire::Check-Valid-Until "false";\n' > /etc/apt/apt.conf.d/99archive
+          apt-get update
+          apt-get install -y --no-install-recommends cmake
+      - name: Build worker
+        run: plugins/${{ matrix.plugin }}/build.sh "$RUNNER_TEMP/worker"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: worker-${{ matrix.plugin }}
+          path: ${{ runner.temp }}/worker
+          if-no-files-found: error
+          retention-days: 7
+
+  package:
+    name: Package ${{ matrix.plugin }}
+    needs: [models, workers]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        plugin: [matcha-tts, sensevoice-asr, yolo26, yolov8-pose, zipformer-asr]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: models-${{ matrix.plugin }}
+          path: ${{ runner.temp }}/models
+      - uses: actions/download-artifact@v4
+        with:
+          name: worker-${{ matrix.plugin }}
+          path: ${{ runner.temp }}/worker
+      - name: Package
+        run: plugins/tools/package.sh ${{ matrix.plugin }} "$RUNNER_TEMP/worker" "$RUNNER_TEMP/models" dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.plugin }}
+          path: dist
+          if-no-files-found: error
+          compression-level: 0
+
+  report:
+    if: always()
+    continue-on-error: true
+    needs: [models, workers, package]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Record run result
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d)
+          cd "$work"
+          # gh needs GH_REPO; this job does not check out the application repo first.
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --json conclusion,status,url,event,headSha,jobs > result.json
+          gh run view "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed > failed.log || true
+          if git clone --depth=1 --branch ci/plugin-pipeline-status \
+              "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" repo; then
+            cd repo
+          else
+            mkdir repo && cd repo
+            git init
+            git checkout -b ci/plugin-pipeline-status
+            git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          fi
+          git config user.name rkserve-ci
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          mkdir -p "report/${GITHUB_RUN_ID}"
+          cp "$work/result.json" "report/${GITHUB_RUN_ID}/result.json"
+          cp "$work/failed.log" "report/${GITHUB_RUN_ID}/failed.log"
+          git add "report/${GITHUB_RUN_ID}"
+          git commit -m "result ${GITHUB_RUN_ID}"
+          for _ in 1 2 3 4 5 6 7 8; do
+            git pull --rebase origin ci/plugin-pipeline-status || true
+            git push -u origin HEAD:ci/plugin-pipeline-status && exit 0
+            sleep 3
+          done
+          exit 1
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/plugins-v')
+    needs: package
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: dist
+          merge-multiple: true
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd dist
+          sha256sum -- *.tar.gz > SHA256SUMS
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Plugins ${GITHUB_REF_NAME#plugins-}" \
+            --notes "Plugin packages built by ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Install with plugins/install.sh; licenses, sources and build information are in each package's licenses/ directory." \
+            -- *.tar.gz SHA256SUMS

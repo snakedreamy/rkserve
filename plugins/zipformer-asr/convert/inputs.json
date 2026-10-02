@@ -1,0 +1,32 @@
+[
+  {
+    "path": "encoder-epoch-99-avg-1.onnx",
+    "url": "https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/zipformer/encoder-epoch-99-avg-1.onnx",
+    "sha256": "7b39a66367161202a1f19142e656cdece37843dc1e108fc0b08c4f50b63acb09",
+    "license": "Apache-2.0"
+  },
+  {
+    "path": "decoder-epoch-99-avg-1.onnx",
+    "url": "https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/zipformer/decoder-epoch-99-avg-1.onnx",
+    "sha256": "4ad42af0618b5b4813bb04928db40d1165ab1e95543be2b5bc0d75f521e64088",
+    "license": "Apache-2.0"
+  },
+  {
+    "path": "joiner-epoch-99-avg-1.onnx",
+    "url": "https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/zipformer/joiner-epoch-99-avg-1.onnx",
+    "sha256": "0919a46eecec8c03290ea3193ebcab127f93bab85784c7cbeb020fda000218ce",
+    "license": "Apache-2.0"
+  },
+  {
+    "path": "vocab.txt",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/examples/zipformer/model/vocab.txt",
+    "sha256": "a0715804ad587a5fe18208b37296c7bb83a4794c6329e298ae7d07a218576d6f",
+    "license": "Apache-2.0"
+  },
+  {
+    "path": "upstream-convert.py",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/examples/zipformer/python/convert.py",
+    "sha256": "8a17083bddce3e31cdcfe70ccb4e9b186d88ecbecd9ef3ba0d8bd9acfc0b4ed5",
+    "license": "Apache-2.0"
+  }
+]

@@ -1,0 +1,146 @@
+[
+  {
+    "path": "yolov8n-pose.onnx",
+    "url": "https://ftrg.zbox.filez.com/v2/delivery/data/95f00b0fc900458ba134f8b180b3f7a1/examples/yolov8_pose/yolov8n-pose.onnx",
+    "sha256": "308495ebe4416b40adf376485252a7b8ba7933a169368b31e74e0f977ded8663",
+    "license": "Ultralytics AGPL-3.0; this is Rockchip's extracted ONNX"
+  },
+  {
+    "path": "upstream-convert.py",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/examples/yolov8_pose/python/convert.py",
+    "sha256": "b3c8fe3855339e9b7c497717c2de84e6d65e4017e6739f4df24080878bc45a8e",
+    "license": "model-zoo Apache-2.0; calibration-image rights require separate review"
+  },
+  {
+    "path": "yolov8_pose_labels_list.txt",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/examples/yolov8_pose/model/yolov8_pose_labels_list.txt",
+    "sha256": "51d7a35f479052ab571dc6996a486c94d766358e9dab8d223c98e455544e8080",
+    "license": "model-zoo Apache-2.0; calibration-image rights require separate review"
+  },
+  {
+    "path": "coco_subset_20.txt",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/coco_subset_20.txt",
+    "sha256": "291aae7a22566fd2efd902ebb668e3077ac9e23d3c00dd5fb416714ed9cbc0db",
+    "license": "model-zoo Apache-2.0; calibration-image rights require separate review"
+  },
+  {
+    "path": "subset/000000005001.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000005001.jpg",
+    "sha256": "99600c56dc25c72dc1cc1d1f2b09aa33b97142560b54d034fa83a38fcf3c5b0f",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000038829.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000038829.jpg",
+    "sha256": "73f5b0fe070aaec65bbb7263d16d3d717a75304333fe939dcf086bd85d6ff2f9",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000052891.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000052891.jpg",
+    "sha256": "e55b86a1cda874117ba1bd855e38dbc9b5427b840c362d72330019676ec47a44",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000075612.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000075612.jpg",
+    "sha256": "ad55b7fe3105db47f033892e97ffe87a92c3545ae303f129d4bd59c5f211148a",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000098261.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000098261.jpg",
+    "sha256": "6d73f5967db3ef19680f17791dd7252e1acf189ddb0cf6590ed211f8da123475",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000181542.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000181542.jpg",
+    "sha256": "c0fdc24e1516a871e5dd195ff34a0da7b2227ef6486492545fb2548743ba4bf5",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000215245.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000215245.jpg",
+    "sha256": "8f26d81db7cb960105b0dbfdd5e2846a4aace8d2fb352b0698f00afb3fe6ebb4",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000277005.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000277005.jpg",
+    "sha256": "3cfea124dbcca946c927f9fefe4314b1a41ff8374adb316bdd969aca100b3d85",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000288685.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000288685.jpg",
+    "sha256": "cd33f1aae3ea110b6de7b35f2225bce018cf30248a78652955678d67b4c19a21",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000301421.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000301421.jpg",
+    "sha256": "a68205cde5ae859ac50c6cb563a0a3e5f7d780f28625afddeb8db153c7dcbb71",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000334371.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000334371.jpg",
+    "sha256": "92974746d650d1562788bde333d087df29ca666662b5b35855cac1f9e62f21b8",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000348481.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000348481.jpg",
+    "sha256": "7b4434ecb88a7379cd6d8327692ce2a1255100ef66bebd602b680e00b5a4206a",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000373353.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000373353.jpg",
+    "sha256": "bc8f393230d375ddce63522d13740ccac6419e646560c97695a12ea3cee0e6fa",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000397681.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000397681.jpg",
+    "sha256": "2d0a0055517147f3a0be7a13ab375f2ad3d41194f8a9d33fb510ca058c5e4662",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000414673.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000414673.jpg",
+    "sha256": "6eda0abfc23d8612800893b44c5a1fe8a4ceb0c43cfc86a3c0deac9a0681c53e",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000419312.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000419312.jpg",
+    "sha256": "7b953b528b2ae9fdc1c768710a8581c397ea552651ceeab6b59d2603f3223417",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000465822.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000465822.jpg",
+    "sha256": "f90159f0241e3358ef8eed729247385f2e682eb48e803ddad9134f41b9d558f3",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000475732.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000475732.jpg",
+    "sha256": "9f2c46374153ac27594475e3b42be01838eb35295068108a89134ad6c73532e7",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000559707.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000559707.jpg",
+    "sha256": "50ae104992c88d5356fa5087bd62c51904134cb6ffa507e4c503024c75efe403",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  },
+  {
+    "path": "subset/000000574315.jpg",
+    "url": "https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/datasets/COCO/subset/000000574315.jpg",
+    "sha256": "b4f4f99c9f1231ed99efa94744f4ae8ef9657ff69ce14a8d0ca60c7f5974dc13",
+    "license": "COCO original images remain copyrighted by their authors; the model-zoo Apache license does not replace image permissions"
+  }
+]

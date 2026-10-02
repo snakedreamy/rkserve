@@ -1,0 +1,12 @@
+# The image is built from the repository root with server/Containerfile and
+# only needs these paths. Podman also reads this file.
+*
+!LICENSE
+!NOTICE
+!server/Cargo.toml
+!server/Cargo.lock
+!server/core/
+!server/protocol/
+!server/frontend/
+server/frontend/node_modules/
+server/frontend/dist/

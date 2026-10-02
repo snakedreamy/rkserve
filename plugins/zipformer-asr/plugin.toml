@@ -1,0 +1,47 @@
+schema_version = 2
+
+[plugin]
+id = "zipformer-asr"
+name = "Zipformer Chinese/English speech recognition"
+version = "0.1.0"
+protocol_version = 2
+executable = "bin/worker"
+
+[[capabilities]]
+id = "audio.transcribe"
+name = "Chinese/English speech transcription"
+description = "Transcribes Chinese and English speech using the Zipformer encoder, decoder and joiner on the RK3576 NPU."
+input_kind = "audio"
+accepted_content_types = ["audio/wav", "audio/x-wav", "audio/wave"]
+# Reserve space for protobuf metadata below the Core 64 MiB gRPC message limit.
+max_input_bytes = 62914560
+output_kind = "text"
+output_content_type = "text/plain"
+
+[capabilities.presentation]
+input_hint = "Upload an unencrypted WAV file. Common PCM/float formats and mono or multichannel audio are supported and automatically converted to 16 kHz mono."
+
+[[capabilities.parameters]]
+key = "beam_size"
+label = "Decoding beam size"
+description = "Defaults to 4 to prioritize recognition accuracy. Set to 1 for the lowest latency."
+kind = "select"
+required = false
+default = "4"
+options = ["1", "2", "4", "8"]
+
+[resources.npu]
+allowed_masks = ["core0", "core1", "core0_1"]
+default_mask = "core1"
+max_concurrency = 1
+queue_size = 16
+request_timeout_ms = 120000
+
+# Localized display text; IDs, configuration values and model paths stay unchanged.
+[translations.zh-CN]
+"plugin.name" = "Zipformer 中英文语音识别"
+"capabilities.audio.transcribe.name" = "中英文语音转文字"
+"capabilities.audio.transcribe.description" = "使用 RK3576 NPU 上的 Zipformer Encoder、Decoder 和 Joiner 转写中英文语音。"
+"capabilities.audio.transcribe.presentation.input_hint" = "上传未加密 WAV 文件；支持常见 PCM/Float、单声道或多声道采样，插件会自动转换为 16 kHz 单声道。"
+"capabilities.audio.transcribe.parameters.beam_size.label" = "解码搜索宽度"
+"capabilities.audio.transcribe.parameters.beam_size.description" = "默认 4，优先提高识别准确率；设为 1 可切换到最低延迟模式。"

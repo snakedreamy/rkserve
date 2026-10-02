@@ -1,0 +1,48 @@
+# Build outputs
+**/target/
+node_modules/
+dist/
+.vite/
+*.o
+*.a
+*.so
+*.so.*
+
+# Downloaded plugin dependencies and conversion work directories
+plugins/.deps/
+plugins/*/convert/.work/
+
+# Runtime state and databases
+run/
+*.sock
+*.pid
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Deployment secrets (only the redacted example is committed)
+/server/deploy/api-keys.json
+.env
+.env.*
+!.env.example
+/rkserve-image.tar
+/rkserve-image.tar.sha256
+
+# Local validation, editor and temporary files
+.local/
+.playwright-mcp/
+.claude/settings.local.json
+.claude/worktrees/
+.DS_Store
+.idea/
+.vscode/
+*.tmp
+*.log
+*.bak
+*.swp
+*~
+
+# Python 转换与测试缓存
+__pycache__/
+*.pyc

@@ -1,0 +1,82 @@
+schema_version = 2
+
+[plugin]
+id = "yolo26"
+name = "YOLO26 Object Detection"
+version = "0.1.0"
+protocol_version = 2
+executable = "bin/worker"
+
+[[capabilities]]
+id = "vision.detect"
+name = "Object detection"
+description = "Runs object detection on the RK3576 NPU using the selected Ultralytics YOLO26 FP16 model."
+input_kind = "image"
+accepted_content_types = ["image/jpeg", "image/png"]
+max_input_bytes = 10485760
+output_kind = "detections"
+output_content_type = "application/json"
+
+[capabilities.presentation]
+renderer = "image_detection_overlay"
+input_hint = "Upload a JPEG or PNG image. Detection boxes are overlaid on the original image after inference."
+
+[[capabilities.parameters]]
+key = "confidence"
+label = "Confidence threshold"
+description = "Filters low-confidence detections. Lowering the threshold can improve recall but increases false positives."
+kind = "number"
+required = false
+default = "0.25"
+min = 0.01
+max = 1.0
+
+[[capabilities.parameters]]
+key = "iou"
+label = "NMS IoU threshold"
+description = "Non-maximum suppression threshold for candidate boxes of the same class."
+kind = "number"
+required = false
+default = "0.70"
+min = 0.0
+max = 1.0
+
+[[capabilities.parameters]]
+key = "max_detections"
+label = "Maximum detections"
+description = "Maximum number of detections returned per image."
+kind = "number"
+required = false
+default = "300"
+min = 1
+max = 300
+
+[[configuration.fields]]
+key = "model"
+label = "Detection model"
+description = "Discovers RKNN models in the plugin model directory. Changing the model while running automatically reloads the worker."
+kind = "select"
+required = true
+options_from = "rknn_models"
+
+[resources.npu]
+allowed_masks = ["core0", "core1", "core0_1"]
+default_mask = "core0_1"
+max_concurrency = 1
+queue_size = 16
+request_timeout_ms = 30000
+
+# Localized display text; IDs, configuration values and model paths stay unchanged.
+[translations.zh-CN]
+"capabilities.vision.detect.name" = "目标检测"
+"capabilities.vision.detect.description" = "使用所选 Ultralytics YOLO26 FP16 模型在 RK3576 NPU 上执行目标检测。"
+"capabilities.vision.detect.presentation.input_hint" = "上传 JPEG 或 PNG 图片；推理完成后会在原图上叠加检测框。"
+"capabilities.vision.detect.parameters.confidence.label" = "置信度阈值"
+"capabilities.vision.detect.parameters.confidence.description" = "过滤低置信度目标；降低可提高召回率，但会增加误检。"
+"capabilities.vision.detect.parameters.iou.label" = "NMS IoU 阈值"
+"capabilities.vision.detect.parameters.iou.description" = "同类别候选框的非极大值抑制阈值。"
+"capabilities.vision.detect.parameters.max_detections.label" = "最大检测数"
+"capabilities.vision.detect.parameters.max_detections.description" = "单张图片最多返回的目标数量。"
+"configuration.model.label" = "检测模型"
+"configuration.model.description" = "自动发现插件模型目录中的 RKNN 模型；运行中切换会自动重新加载 Worker。"
+"plugin.name" = "YOLO26 目标检测"

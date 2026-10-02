@@ -1,0 +1,18 @@
+{
+  "keys": [
+    {
+      "name": "console",
+      "role": "management",
+      "key": "REPLACE_WITH_A_RANDOM_KEY_OF_AT_LEAST_32_BYTES",
+      "scopes": ["read", "infer", "control", "audit"],
+      "enabled": true
+    },
+    {
+      "name": "inference",
+      "role": "api",
+      "key": "REPLACE_WITH_A_SECOND_RANDOM_KEY_OF_AT_LEAST_32_BYTES",
+      "scopes": ["infer"],
+      "enabled": true
+    }
+  ]
+}

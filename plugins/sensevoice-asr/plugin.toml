@@ -1,0 +1,59 @@
+schema_version = 2
+
+[plugin]
+id = "sensevoice-asr"
+name = "SenseVoice multilingual speech understanding"
+version = "0.1.0"
+protocol_version = 2
+executable = "bin/worker"
+
+[[capabilities]]
+id = "audio.transcribe"
+name = "Multilingual speech recognition"
+description = "Recognizes speech, language, emotion and sound events with SenseVoice-small FP16 on the RK3576 NPU."
+input_kind = "audio"
+accepted_content_types = ["audio/wav", "audio/x-wav", "audio/wave"]
+# Reserve space for protobuf metadata below the Core 64 MiB gRPC message limit.
+max_input_bytes = 62914560
+output_kind = "json"
+output_content_type = "application/json"
+
+[capabilities.presentation]
+renderer = "speech_transcription"
+input_hint = "Upload an unencrypted WAV file. Common PCM/float formats and mono or multichannel audio are supported. Long recordings are transcribed in segments and merged."
+
+[[capabilities.parameters]]
+key = "language"
+label = "Recognition language"
+description = "Automatic detection supports more languages. Specifying Chinese, English, Cantonese, Japanese or Korean can improve consistency for that language."
+kind = "select"
+required = false
+default = "auto"
+options = ["auto", "zh", "en", "yue", "ja", "ko"]
+
+[[capabilities.parameters]]
+key = "text_normalization"
+label = "Text normalization"
+description = "Converts numbers, dates and similar expressions to conventional written forms when enabled."
+kind = "select"
+required = false
+default = "withitn"
+options = ["withitn", "woitn"]
+
+[resources.npu]
+allowed_masks = ["core0", "core1", "core0_1"]
+default_mask = "core1"
+max_concurrency = 1
+queue_size = 8
+request_timeout_ms = 180000
+
+# Localized display text; IDs, configuration values and model paths stay unchanged.
+[translations.zh-CN]
+"plugin.name" = "SenseVoice 多语言语音理解"
+"capabilities.audio.transcribe.name" = "多语言语音识别"
+"capabilities.audio.transcribe.description" = "使用 RK3576 NPU 上的 SenseVoice-small FP16 模型识别语音、语言、情绪和声音事件。"
+"capabilities.audio.transcribe.presentation.input_hint" = "上传未加密 WAV；支持常见 PCM/Float、单声道或多声道采样。长录音会自动分段识别并合并。"
+"capabilities.audio.transcribe.parameters.language.label" = "识别语言"
+"capabilities.audio.transcribe.parameters.language.description" = "自动检测支持更多语言；明确指定中、英、粤、日、韩时可提高对应语言的稳定性。"
+"capabilities.audio.transcribe.parameters.text_normalization.label" = "文本规范化"
+"capabilities.audio.transcribe.parameters.text_normalization.description" = "开启后将数字、日期等尽可能转换为日常书写形式。"

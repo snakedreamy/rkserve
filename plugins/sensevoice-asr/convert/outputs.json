@@ -1,0 +1,6 @@
+[
+  "assets/models/sense-voice-encoder.rk3576.fp16.rknn",
+  "assets/text/am.mvn",
+  "assets/text/embedding.npy",
+  "assets/text/tokens.txt"
+]
