@@ -1,0 +1,24 @@
+rkserve.example.com {
+	encode zstd gzip
+
+	request_body {
+		max_size 64MB
+	}
+
+	header {
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), geolocation=(), microphone=()"
+		Content-Security-Policy "default-src 'self'; connect-src 'self'; img-src 'self' blob: data:; media-src 'self' blob:; font-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+	}
+
+	reverse_proxy 127.0.0.1:8080 {
+		# Overwrite client-provided forwarding headers before they reach RKServe.
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "path": "matcha-icefall-zh-en.tar.bz2",
+    "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/matcha-icefall-zh-en.tar.bz2",
+    "sha256": "271b804af570400d3bcdcb53bf6e53cc9f75180ee763b9f13eb5eaf2b0d086ef",
+    "license": "Model Apache-2.0; bundled eSpeak data GPL-3.0"
+  },
+  {
+    "path": "vocos-16khz-univ.onnx",
+    "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/vocoder-models/vocos-16khz-univ.onnx",
+    "sha256": "b599142a1fb8ff03de3e84ac35ff537c619e56f4267a6fe894851a42844acf9e",
+    "license": "MIT"
+  },
+  {
+    "path": "espeak-ng-source-ed530aa.zip",
+    "url": "https://github.com/csukuangfj/espeak-ng/archive/ed530aa113046142eb5115cf2fc9157854d0ffe1.zip",
+    "sha256": "e4e262cbe34f7fe21f91f1ba3397f2728e1f30eafbae7853f2b753a9ed13f0dd",
+    "license": "GPL-3.0"
+  }
+]

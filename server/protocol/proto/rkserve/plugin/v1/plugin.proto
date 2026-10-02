@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package rkserve.plugin.v1;
+
+service PluginRuntime {
+  rpc Describe(DescribeRequest) returns (DescribeResponse);
+  rpc Health(HealthRequest) returns (HealthResponse);
+  rpc Load(LoadRequest) returns (LoadResponse);
+  rpc ExecuteJob(ExecuteJobRequest) returns (ExecuteJobResponse);
+  rpc Drain(DrainRequest) returns (DrainResponse);
+  rpc Unload(UnloadRequest) returns (UnloadResponse);
+}
+
+message DescribeRequest {}
+
+message DescribeResponse {
+  string plugin_id = 1;
+  string plugin_version = 2;
+  uint32 protocol_version = 3;
+  repeated string capabilities = 4;
+  bool npu_required = 5;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  enum ServingStatus {
+    SERVING_STATUS_UNSPECIFIED = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    DEGRADED = 3;
+  }
+  ServingStatus status = 1;
+  string detail = 2;
+  uint64 active_requests = 3;
+}
+
+enum NpuCoreMask {
+  NPU_CORE_MASK_UNSPECIFIED = 0;
+  NPU_CORE_0 = 1;
+  NPU_CORE_1 = 2;
+  NPU_CORE_0_1 = 3;
+}
+
+message LoadRequest {
+  string lease_id = 1;
+  NpuCoreMask core_mask = 2;
+  map<string, string> config = 3;
+}
+
+message LoadResponse {
+  string runtime_version = 1;
+  string driver_version = 2;
+  string model_target = 3;
+  NpuCoreMask active_core_mask = 4;
+}
+
+message ExecuteJobRequest {
+  string job_id = 1;
+  string request_id = 2;
+  string capability_id = 3;
+  string content_type = 4;
+  bytes payload = 5;
+  map<string, string> parameters = 6;
+}
+
+message ExecuteJobResponse {
+  string content_type = 1;
+  bytes payload = 2;
+  uint64 queue_us = 3;
+  uint64 preprocess_us = 4;
+  uint64 inference_us = 5;
+  uint64 postprocess_us = 6;
+}
+
+message DrainRequest { uint64 timeout_ms = 1; }
+message DrainResponse { uint64 remaining_requests = 1; }
+message UnloadRequest {}
+message UnloadResponse {}

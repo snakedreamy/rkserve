@@ -1,0 +1,36 @@
+schema_version = 2
+
+[plugin]
+id = "yolov8-pose"
+name = "YOLOv8 Human Pose"
+version = "0.1.0"
+protocol_version = 2
+executable = "bin/worker"
+
+[[capabilities]]
+id = "vision.pose"
+name = "Human pose estimation"
+description = "Detects people in an image and returns bounding boxes with COCO 17-keypoint skeletons."
+input_kind = "image"
+accepted_content_types = ["image/jpeg", "image/png"]
+max_input_bytes = 10485760
+output_kind = "json"
+output_content_type = "application/json"
+
+[capabilities.presentation]
+renderer = "image_pose_overlay"
+input_hint = "Upload a JPEG or PNG image. Skeletons and keypoints are overlaid on the original image after inference."
+
+[resources.npu]
+allowed_masks = ["core0", "core1", "core0_1"]
+default_mask = "core0"
+max_concurrency = 1
+queue_size = 16
+request_timeout_ms = 5000
+
+# Localized display text; IDs, configuration values and model paths stay unchanged.
+[translations.zh-CN]
+"capabilities.vision.pose.name" = "人体姿态估计"
+"capabilities.vision.pose.description" = "检测图像中的人物并返回边界框及 COCO 17 点人体骨架。"
+"capabilities.vision.pose.presentation.input_hint" = "上传 JPEG 或 PNG 图片；推理完成后，人体骨架和关键点会叠加在原图上。"
+"plugin.name" = "YOLOv8 人体姿态"

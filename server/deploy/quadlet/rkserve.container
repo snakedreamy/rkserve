@@ -1,0 +1,69 @@
+[Unit]
+Description=RKServe RK3576 NPU service
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+# For prebuilt images, set Image=ghcr.io/snakedreamy/rkserve:<version> and remove Pull=never.
+Image=localhost/rkserve:latest
+Pull=never
+ContainerName=rkserve
+
+# Rootless Podman maps the host user to container UID 0 by default.
+# Do not use keep-id; the process and persistent storage use container root.
+User=0
+
+# Publish only on the host loopback interface.
+# Caddy connects to 127.0.0.1:8080; RKServe is not exposed directly to the LAN.
+# The container cannot access other localhost services in the host network namespace.
+PublishPort=127.0.0.1:8080:8080
+Environment=RKSERVE_LISTEN=0.0.0.0:8080
+Environment=RKSERVE_TRUSTED_PROXIES=127.0.0.1,::1
+Environment=RKSERVE_API_KEYS_FILE=/run/secrets/rkserve-api-keys
+Environment=RKSERVE_PLUGIN_ROOT=/opt/rkserve/plugins
+Environment=RKSERVE_RUNTIME_ROOT=/run/rkserve/plugins
+Environment=RKSERVE_STATE_ROOT=/var/lib/rkserve
+Environment=RKSERVE_CONSOLE_ROOT=/opt/rkserve/console
+Environment=RKSERVE_EVENT_RETENTION_DAYS=30
+Environment=RKSERVE_EVENT_MAX_ROWS=100000
+Environment=RUST_LOG=rkserve=info,tower_http=info
+
+Secret=rkserve-api-keys,type=mount,target=/run/secrets/rkserve-api-keys,uid=0,gid=0,mode=0400
+Volume=%h/podman/rkserve/state:/var/lib/rkserve:rw
+# Plugins are installed on the host with plugins/install.sh --dest %h/podman/rkserve/plugins.
+Volume=%h/podman/rkserve/plugins:/opt/rkserve/plugins:ro
+
+AddDevice=/dev/dri/renderD129
+AddDevice=/dev/rga
+AddDevice=/dev/dma_heap/system
+AddDevice=/dev/dma_heap/system-uncached
+GroupAdd=keep-groups
+
+ReadOnly=true
+ReadOnlyTmpfs=false
+Tmpfs=/run/rkserve:rw,nosuid,nodev,noexec,size=64m,mode=0700
+Tmpfs=/tmp:rw,nosuid,nodev,noexec,size=64m,mode=1777
+RunInit=true
+DropCapability=ALL
+NoNewPrivileges=true
+PidsLimit=256
+LogDriver=journald
+Timezone=local
+
+# Declare explicitly to support images with or without health-check metadata.
+HealthCmd=busybox wget -q -O /dev/null http://127.0.0.1:8080/health
+HealthInterval=30s
+HealthTimeout=3s
+HealthStartPeriod=10s
+HealthRetries=3
+HealthOnFailure=kill
+Notify=healthy
+
+[Service]
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=45
+
+[Install]
+WantedBy=default.target

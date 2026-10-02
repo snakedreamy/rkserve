@@ -1,0 +1,6 @@
+[
+  "assets/models/encoder.rknn",
+  "assets/models/decoder.rknn",
+  "assets/models/joiner.rknn",
+  "assets/text/vocab.txt"
+]

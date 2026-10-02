@@ -1,0 +1,13 @@
+RKServe
+Copyright 2026 snakedreamy and RKServe contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+The console bundles third-party fonts and icons; see
+server/frontend/public/THIRD_PARTY_NOTICES.md.
+
+Plugins are built and distributed separately as GitHub Release packages.
+Each package bundles third-party models, runtime libraries and binaries that
+remain under their own licenses, including GPL-3.0 (eSpeak NG), AGPL-3.0
+(Ultralytics YOLO models) and the Rockchip RKNN SDK license. See
+plugins/README.md and the licenses/ directory of each plugin.

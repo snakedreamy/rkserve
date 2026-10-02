@@ -1,0 +1,7 @@
+[
+  "assets/models/matcha-duration.onnx",
+  "assets/models/matcha-s64-fp16.rknn",
+  "assets/models/vocos-16khz-600-fp16.rknn",
+  "assets/text/lexicon.txt",
+  "assets/text/tokens.txt"
+]

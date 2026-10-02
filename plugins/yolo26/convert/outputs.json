@@ -1,0 +1,12 @@
+[
+  "assets/models/yolo26n_rknn_fp16_640/yolo26n-rk3576.rknn",
+  "assets/models/yolo26n_rknn_fp16_640/metadata.yaml",
+  "assets/models/yolo26s_rknn_fp16_640/yolo26s-rk3576.rknn",
+  "assets/models/yolo26s_rknn_fp16_640/metadata.yaml",
+  "assets/models/yolo26m_rknn_fp16_640/yolo26m-rk3576.rknn",
+  "assets/models/yolo26m_rknn_fp16_640/metadata.yaml",
+  "assets/models/yolo26l_rknn_fp16_640/yolo26l-rk3576.rknn",
+  "assets/models/yolo26l_rknn_fp16_640/metadata.yaml",
+  "assets/models/yolo26x_rknn_fp16_640/yolo26x-rk3576.rknn",
+  "assets/models/yolo26x_rknn_fp16_640/metadata.yaml"
+]

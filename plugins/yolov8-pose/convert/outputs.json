@@ -1,0 +1,4 @@
+[
+  "assets/models/yolov8_pose.rknn",
+  "assets/models/yolov8_pose_labels_list.txt"
+]

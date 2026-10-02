@@ -1,0 +1,26 @@
+# Third-party build and runtime files that are downloaded, not committed.
+# Each line: <path under plugins/.deps>  <sha256>  <official download URL>
+#
+# rknpu2/*:     Rockchip RKNN Runtime 2.3.2 (RKNN SDK license, see
+#               <plugin>/licenses/RKNN-SDK-LICENSE), airockchip/rknn-toolkit2 @ 59a913d1.
+#               Float16.h is taken from airockchip/rknn_model_zoo @ bad6c733.
+# librga/*:     Rockchip RGA (Apache-2.0), airockchip/rknn_model_zoo @ bad6c733.
+# jpeg_turbo/*: libjpeg-turbo (BSD-style), airockchip/rknn_model_zoo @ bad6c733.
+# onnxruntime/: ONNX Runtime 1.26.0 (MIT), official release archive.
+rknpu2/include/rknn_api.h                c48e11a6f41b451a5fd1e4ad774ea60252d3d94f78bee9b21ea3d21b21deba9a https://raw.githubusercontent.com/airockchip/rknn-toolkit2/59a913d172e7f5ff03c9076e2ec7b1b1288ffd08/rknpu2/runtime/Linux/librknn_api/include/rknn_api.h
+rknpu2/lib/librknnrt.so                  d31fc19c85b85f6091b2bd0f6af9d962d5264a4e410bfb536402ec92bac738e8 https://raw.githubusercontent.com/airockchip/rknn-toolkit2/59a913d172e7f5ff03c9076e2ec7b1b1288ffd08/rknpu2/runtime/Linux/librknn_api/aarch64/librknnrt.so
+rknpu2/include/Float16.h                 b394d3177c419c0be391478551e60b002b758804e6548ae697915f565bfa5dd5 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/rknpu2/include/Float16.h
+librga/include/drmrga.h                  7db37dfc3fedc4573cf0d223f87ea319a66d7af90670b8a259248bec52b3eb15 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/drmrga.h
+librga/include/im2d.h                    5ee06891775451c56e6264f5d53db0a4e948e1830287f3a5db4f75c30ac0ff11 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d.h
+librga/include/im2d_buffer.h             14f9ed0da92fc0867fa50f1b397cf33640bd58f75d450d5e1ff2fe103875d3b9 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_buffer.h
+librga/include/im2d_common.h             788a91fc2e67012df8252f6e02c75292a44317131ccd6672f8db1ac851effd19 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_common.h
+librga/include/im2d_mpi.h                820484df831f12f9d44f673bee7f6f180470d828e9233527c9d70ef59d2fe3f7 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_mpi.h
+librga/include/im2d_single.h             38742650853c5ebdf4a87a8c6453806bc82130816f02b4102e91434773ad258e https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_single.h
+librga/include/im2d_task.h               176feab418ab9abef15917bbb0d678acd680089e0515a86fc5a4417bc9627e38 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_task.h
+librga/include/im2d_type.h               54260b7650c4af9281f4f201e63d6c663372365aecdab899f54edcd6e7bf1e4f https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_type.h
+librga/include/im2d_version.h            82785c4b68a86d4f5abc91bc17397ab7e24f2163a65f8e6285efbab938441351 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/im2d_version.h
+librga/include/rga.h                     d4c3f3aa52ed517d3185768ee1c1b9fe0b6791e4047d8f695a62976c87730a1b https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/include/rga.h
+librga/lib/librga.so                     d0f5ae5c18c4c54ccee1d697b60f94507c5827389bb8fe9d4b0a4cb39cdc5972 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/librga/Linux/aarch64/librga.so
+jpeg_turbo/include/turbojpeg.h           dd5de112259a27ed9f72830b7dda19f435ce0694632f94c7f87acf8e68156ed0 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/jpeg_turbo/include/turbojpeg.h
+jpeg_turbo/lib/libturbojpeg.a            5fafee31ec37370452e460570ed8ed0fa9c4acb363d4661b7fed441ef8eae945 https://raw.githubusercontent.com/airockchip/rknn_model_zoo/bad6c7334531becaf90a561988519b7bec34d0ab/3rdparty/jpeg_turbo/Linux/aarch64/libturbojpeg.a
+onnxruntime/onnxruntime-linux-aarch64-1.26.0.tgz 34ff1c2d0f12e2cf3d33a0c5f82e39792e1d581fbd6968fd7c30d173654be01a https://github.com/microsoft/onnxruntime/releases/download/v1.26.0/onnxruntime-linux-aarch64-1.26.0.tgz

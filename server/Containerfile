@@ -1,0 +1,67 @@
+# Build from the repository root: podman build -f server/Containerfile .
+# The image contains RKServe Core and the console only. Plugins are installed
+# separately (plugins/install.sh) and mounted at /opt/rkserve/plugins.
+
+FROM docker.io/library/node:20.20.2-bookworm-slim AS frontend-builder
+
+WORKDIR /build/frontend
+RUN corepack enable pnpm
+COPY server/frontend/package.json server/frontend/pnpm-lock.yaml ./
+RUN node --version \
+    && pnpm --version \
+    && pnpm install --frozen-lockfile --ignore-scripts \
+    && test -x node_modules/.bin/tsc \
+    && test -x node_modules/.bin/vite
+COPY server/frontend/ ./
+RUN pnpm run build
+
+
+FROM docker.io/library/rust:1.88-bookworm AS backend-builder
+
+ARG CARGO_BUILD_JOBS=4
+ENV CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS}
+
+WORKDIR /build
+COPY server/Cargo.toml server/Cargo.lock ./
+COPY server/core/ ./core/
+COPY server/protocol/ ./protocol/
+RUN cargo build --locked --release --package rkserve-core \
+    && install -Dm755 target/release/rkserve-core /out/rkserve-core \
+    && strip --strip-unneeded /out/rkserve-core
+
+
+FROM docker.io/library/ubuntu:24.04 AS runtime
+
+ARG RKSERVE_REVISION=unknown
+LABEL org.opencontainers.image.title="RKServe" \
+      org.opencontainers.image.description="RK3576 NPU service platform" \
+      org.opencontainers.image.source="https://github.com/snakedreamy/rkserve" \
+      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.revision="${RKSERVE_REVISION}"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends busybox libgcc-s1 libstdc++6 \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /opt/rkserve/plugins /opt/rkserve/console /run/rkserve/plugins /run/secrets /var/lib/rkserve \
+    && chmod 0700 /run/rkserve /run/rkserve/plugins /run/secrets /var/lib/rkserve
+
+COPY --from=backend-builder /out/rkserve-core /usr/local/bin/rkserve-core
+COPY --from=frontend-builder /build/frontend/dist/ /opt/rkserve/console/
+COPY LICENSE NOTICE /opt/rkserve/
+
+ENV RKSERVE_LISTEN=0.0.0.0:8080 \
+    RKSERVE_API_KEYS_FILE=/run/secrets/rkserve-api-keys \
+    RKSERVE_PLUGIN_ROOT=/opt/rkserve/plugins \
+    RKSERVE_RUNTIME_ROOT=/run/rkserve/plugins \
+    RKSERVE_STATE_ROOT=/var/lib/rkserve \
+    RKSERVE_CONSOLE_ROOT=/opt/rkserve/console \
+    RKSERVE_EVENT_RETENTION_DAYS=30 \
+    RKSERVE_EVENT_MAX_ROWS=100000
+
+WORKDIR /opt/rkserve
+USER 0:0
+EXPOSE 8080
+STOPSIGNAL SIGTERM
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD ["busybox", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+ENTRYPOINT ["/usr/local/bin/rkserve-core"]

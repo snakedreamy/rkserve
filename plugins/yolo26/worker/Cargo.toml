@@ -1,0 +1,22 @@
+[package]
+name = "rkserve-yolo26-worker"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+rkserve-protocol = { path = "../../../server/protocol" }
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml = "0.9"
+tokio.workspace = true
+tokio-stream = { version = "0.1", features = ["net"] }
+tonic.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[build-dependencies]
+cc = "1.2"

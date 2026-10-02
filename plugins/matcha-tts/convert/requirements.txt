@@ -1,0 +1,6 @@
+# 图简化工具及其固定传递依赖；3.11 有预编译 wheel。
+onnxsim==0.4.36
+rich==13.9.4
+markdown-it-py==3.0.0
+mdurl==0.1.2
+Pygments==2.18.0
